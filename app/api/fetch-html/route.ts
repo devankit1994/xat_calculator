@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import { ANSWER_KEYS } from "./keys";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const { url } = await req.json();
+    const { url, name, mobile, email } = await req.json();
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -14,6 +15,23 @@ export async function POST(req: Request) {
     const html = await response.text();
 
     const results = parseAnswerSheet(html, url);
+
+    // Store in Supabase
+    const { error: dbError } = await supabase.from("xat_scores").insert({
+      url,
+      name,
+      mobile,
+      email,
+      candidate_name: results.candidateName,
+      total_score: results.part1.totalScore,
+      part1_stats: results.part1,
+      gk_stats: results.gk,
+      section_stats: results.sections,
+    });
+
+    if (dbError) {
+      console.error("Supabase insert error:", dbError);
+    }
 
     return NextResponse.json(results);
   } catch (error) {
