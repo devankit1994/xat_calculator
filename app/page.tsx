@@ -491,6 +491,305 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* SEO Content & Information */}
+        <div className="mt-12 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-8 space-y-10">
+            {/* Intro */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                XAT Score Calculator 2026
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                Upload your XAT response sheet and get an accurate score
+                prediction with our AI-powered XAT Score Calculator. Instantly
+                view your sectional scores (VARC, QA&DI, DM, and GK), overall
+                score, expected percentile, and rank insights to help you
+                understand your performance clearly.
+              </p>
+            </section>
+
+            {/* How to Check */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                How to Check XAT Score 2026?
+              </h2>
+              <div className="space-y-4">
+                <ol className="space-y-3 text-gray-600">
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mt-0.5">
+                      1
+                    </span>
+                    <span>
+                      Visit the official XAT website –{" "}
+                      <a
+                        href="https://xatonline.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline font-medium"
+                      >
+                        https://xatonline.in/
+                      </a>
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mt-0.5">
+                      2
+                    </span>
+                    <span>
+                      Log in and click <strong>Download Admit Card</strong> to
+                      access the response sheet login portal
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mt-0.5">
+                      3
+                    </span>
+                    <span>
+                      Open <strong>Candidate Response</strong> and copy your
+                      response sheet link
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mt-0.5">
+                      4
+                    </span>
+                    <span>
+                      Paste the link in the textbox above and click{" "}
+                      <strong>Check My Score</strong>
+                    </span>
+                  </li>
+                </ol>
+                <div className="pt-2 space-y-4">
+                  <p className="text-gray-600 leading-relaxed">
+                    XAT 2026 results are expected in the last week of January
+                    2026 by XLRI Jamshedpur. While candidates eagerly await the
+                    official result, our AI-based XAT Score Calculator helps you
+                    estimate your score, percentile, and probable rank in
+                    advance—saving time and uncertainty.
+                  </p>
+                  <p className="text-gray-600 leading-relaxed">
+                    Our calculator uses trusted formulas aligned with the latest
+                    XAT exam pattern and marking scheme, ensuring precise and
+                    reliable predictions. Enter your response details carefully
+                    to get the most accurate outcome.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* What Is */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                What Is the XAT Score Calculator 2026?
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                The XAT Score Calculator predicts your expected score and
+                percentile using advanced artificial intelligence and data
+                modeling. Unlike traditional guesswork-based predictors, our
+                calculator uses real exam trends, statistical analysis, and
+                smart algorithms to provide near-accurate insights—even before
+                the official result is declared.
+              </p>
+            </section>
+
+            {/* How Does It Work */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                How Does the XAT Score Calculator Work?
+              </h2>
+              <ul className="space-y-3 text-gray-600 mb-6">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Syncs with latest XAT 2026 pattern & marking scheme
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Uses your official response sheet data</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Applies statistical analysis, AI modeling, and machine
+                    learning
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Considers past trends, difficulty levels, and cut-offs
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>Provides accurate score & percentile prediction</span>
+                </li>
+              </ul>
+              <p className="text-gray-600 leading-relaxed bg-blue-50 p-4 rounded-lg border border-blue-100">
+                Once XLRI releases the official XAT 2026 response sheet, simply
+                paste your link, and our system will instantly analyze your
+                correct answers, mistakes, sectional performance, and overall
+                status to generate realistic score predictions.
+              </p>
+            </section>
+
+            {/* Benefits */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Benefits of Using the XAT Score Calculator
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-gray-50 p-5 rounded-xl hover:bg-white hover:shadow-md transition-all border border-gray-100">
+                  <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2 text-lg">
+                    🔍 No Guesswork
+                  </h3>
+                  <p className="text-gray-600">
+                    Get data-driven predictions instead of assumptions.
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-5 rounded-xl hover:bg-white hover:shadow-md transition-all border border-gray-100">
+                  <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2 text-lg">
+                    📊 Smarter Decision-Making
+                  </h3>
+                  <p className="text-gray-600">
+                    Understand your performance, strengths, and improvement
+                    areas to plan effectively.
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-5 rounded-xl hover:bg-white hover:shadow-md transition-all border border-gray-100">
+                  <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2 text-lg">
+                    ⏳ Saves Time
+                  </h3>
+                  <p className="text-gray-600">
+                    Quick, centralized, and easy to use—trusted by thousands of
+                    aspirants.
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-5 rounded-xl hover:bg-white hover:shadow-md transition-all border border-gray-100">
+                  <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2 text-lg">
+                    🎯 Better Preparation Strategy
+                  </h3>
+                  <p className="text-gray-600">
+                    Use insights to plan interviews, reattempts, college
+                    shortlisting, and next steps confidently.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Exam Pattern Table */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                XAT 2026 Exam Pattern & Marking Scheme
+              </h2>
+              <div className="overflow-x-auto border border-gray-200 rounded-xl shadow-sm">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-4 whitespace-nowrap">Section</th>
+                      <th className="px-6 py-4 whitespace-nowrap">
+                        No. of Questions
+                      </th>
+                      <th className="px-6 py-4 whitespace-nowrap">Time</th>
+                      <th className="px-6 py-4 whitespace-nowrap">Marks</th>
+                      <th className="px-6 py-4 whitespace-nowrap">
+                        Negative Marking
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        Verbal & Logical Ability (VLA)
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">26–28</td>
+                      <td className="px-6 py-4 text-gray-600">40 mins</td>
+                      <td className="px-6 py-4 text-green-600 font-medium">
+                        +1 per question
+                      </td>
+                      <td className="px-6 py-4 text-red-600">
+                        –0.25 per wrong
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        Decision Making (DM)
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">21–23</td>
+                      <td className="px-6 py-4 text-gray-600">30 mins</td>
+                      <td className="px-6 py-4 text-green-600 font-medium">
+                        +1 per question
+                      </td>
+                      <td className="px-6 py-4 text-red-600">
+                        –0.25 per wrong
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        Quantitative Ability & Data Interpretation (QA & DI)
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">27–30</td>
+                      <td className="px-6 py-4 text-gray-600">40 mins</td>
+                      <td className="px-6 py-4 text-green-600 font-medium">
+                        +1 per question
+                      </td>
+                      <td className="px-6 py-4 text-red-600">
+                        –0.25 per wrong
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        General Knowledge (GK)
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">25</td>
+                      <td className="px-6 py-4 text-gray-600">15 mins</td>
+                      <td className="px-6 py-4 text-green-600 font-medium">
+                        +0.5 per question
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">No negative</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        Essay Writing
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">1</td>
+                      <td className="px-6 py-4 text-gray-600">20 mins</td>
+                      <td className="px-6 py-4 text-gray-500">
+                        Not scored in percentile
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Promotion */}
+            <section className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-8 text-white shadow-lg text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2 flex flex-col sm:flex-row items-center gap-2">
+                    <Trophy className="w-8 h-8 text-yellow-300" />
+                    <span>
+                      620+ My Campus Review Students Scored 99+ Percentile in
+                      CAT 2025
+                    </span>
+                  </h3>
+                  <p className="text-blue-100 text-lg">
+                    Crack XAT 2026 & other competitive exams with expert
+                    guidance from My Campus Review.
+                  </p>
+                </div>
+                {/* Optional: Call to Action button for the promotion */}
+                {/* <button className="bg-white text-blue-700 font-bold py-3 px-6 rounded-lg shadow-sm hover:bg-blue-50 transition-colors whitespace-nowrap">
+                  Get Started
+                </button> */}
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
     </div>
   );
