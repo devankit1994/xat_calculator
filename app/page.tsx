@@ -61,6 +61,16 @@ export default function Home() {
       return;
     }
 
+    if (mobile.trim().length !== 10) {
+      setError("Mobile number is not valid");
+      return;
+    }
+
+    if (!/^[6-9]/.test(mobile.trim())) {
+      setError("Mobile number is not valid");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setResults(null);
@@ -211,9 +221,20 @@ export default function Home() {
                     <input
                       type="tel"
                       value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        if (value.length <= 10) {
+                          setMobile(value);
+                          if (error) setError("");
+                        }
+                      }}
                       placeholder="Mobile No."
-                      className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder-gray-400 font-medium text-gray-900"
+                      className={`w-full pl-11 pr-4 py-3 bg-white border rounded-xl focus:ring-2 outline-none transition-all placeholder-gray-400 font-medium text-gray-900 ${
+                        error.toLowerCase().includes("mobile") ||
+                        error.includes("valid")
+                          ? "border-red-500 focus:ring-red-500/20 focus:border-red-500"
+                          : "border-gray-200 focus:ring-blue-500/20 focus:border-blue-500"
+                      }`}
                     />
                   </div>
                 </div>
