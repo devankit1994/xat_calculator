@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { ANSWER_KEYS } from "./keys";
-import { supabase } from "@/lib/supabase";
+import { ANSWER_KEYS } from "../fetch-html/keys";
 
 export async function POST(req: Request) {
   try {
@@ -16,21 +15,25 @@ export async function POST(req: Request) {
 
     const results = parseAnswerSheet(html, url);
 
-    // Store in Supabase
-    const { error: dbError } = await supabase.from("xat_scores").insert({
-      url,
-      name,
-      mobile,
-      email,
-      candidate_name: results.candidateName,
-      total_score: results.part1.totalScore,
-      part1_stats: results.part1,
-      gk_stats: results.gk,
-      section_stats: results.sections,
-    });
-
-    if (dbError) {
-      console.error("Supabase insert error:", dbError);
+    // Save data using common API
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/saveCalculatorData`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            mobile,
+            email,
+            url,
+            examType: "XAT",
+            results,
+          }),
+        }
+      );
+    } catch (error) {
+      console.error('Failed to save data:', error);
     }
 
     return NextResponse.json(results);
