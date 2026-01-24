@@ -28,6 +28,7 @@ export async function POST(req: Request) {
           email,
           url,
           examType: "CMAT",
+          tableName: "cmat_scores",
           results,
         }),
       });

@@ -3,7 +3,19 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const { name, mobile, email, url, examType, results } = await req.json();
+    const { name, mobile, email, url, examType, results, tableName } =
+      await req.json();
+
+    // Decide table based on caller input (whitelisted for safety)
+    const allowedTables = new Set(["cmat_scores", "xat_scores"]);
+    const inferredTable =
+      examType === "CMAT"
+        ? "cmat_scores"
+        : examType === "XAT"
+          ? "xat_scores"
+          : null;
+
+    const targetTable: string | null = tableName ?? inferredTable;
 
     // basic validation
     if (!name || !mobile || !email || !url || !examType || !results) {
@@ -13,9 +25,19 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!targetTable || !allowedTables.has(targetTable)) {
+      return NextResponse.json(
+        {
+          error: "Invalid or missing tableName",
+          allowed: Array.from(allowedTables),
+        },
+        { status: 400 },
+      );
+    }
+
     // Check if record already exists
     const { data: existingData, error: checkError } = await supabase
-      .from("xat_scores")
+      .from(targetTable)
       .select("id")
       .eq("name", name)
       .eq("mobile", mobile)
@@ -36,7 +58,7 @@ export async function POST(req: Request) {
     }
 
     // Insert new record
-    const { data, error } = await supabase.from("xat_scores").insert({
+    const { data, error } = await supabase.from(targetTable).insert({
       name,
       mobile,
       email,
