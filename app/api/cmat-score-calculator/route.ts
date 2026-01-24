@@ -17,23 +17,22 @@ export async function POST(req: Request) {
 
     // Save data using common API
     try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/saveCalculatorData`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            mobile,
-            email,
-            url,
-            examType: "CMAT",
-            results,
-          }),
-        }
-      );
+      const saveUrl = new URL("/api/saveCalculatorData", req.url);
+
+      await fetch(saveUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          mobile,
+          email,
+          url,
+          examType: "CMAT",
+          results,
+        }),
+      });
     } catch (error) {
-      console.error('Failed to save data:', error);
+      console.error("Failed to save data:", error);
     }
 
     return NextResponse.json(results);
@@ -41,7 +40,7 @@ export async function POST(req: Request) {
     console.error("Error fetching or parsing:", error);
     return NextResponse.json(
       { error: "Failed to fetch or parse answer sheet" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -148,7 +147,7 @@ function parseAnswerSheet(html: string, url: string) {
                   $(tr)
                     .find("[style]")
                     .filter((_, el) =>
-                      greenColorRegex.test($(el).attr("style") || "")
+                      greenColorRegex.test($(el).attr("style") || ""),
                     ).length > 0
                 ) {
                   correctOption = optionLabel;

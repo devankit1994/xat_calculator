@@ -3,39 +3,25 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const {
-      name,
-      mobile,
-      email,
-      url,
-      examType,
-      results,
-    } = await req.json();
+    const { name, mobile, email, url, examType, results } = await req.json();
 
     // basic validation
-    if (
-      !name ||
-      !mobile ||
-      !email ||
-      !url ||
-      !examType ||
-      !results
-    ) {
+    if (!name || !mobile || !email || !url || !examType || !results) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if record already exists
     const { data: existingData, error: checkError } = await supabase
-      .from("calculator_submissions")
+      .from("xat_scores")
       .select("id")
       .eq("name", name)
       .eq("mobile", mobile)
       .eq("email", email)
       .eq("url", url)
-      .eq("exam_type", examType)
+      // .eq("exam_type", examType)
       .limit(1);
 
     if (checkError) {
@@ -50,24 +36,23 @@ export async function POST(req: Request) {
     }
 
     // Insert new record
-    const { data, error } = await supabase
-      .from("calculator_submissions")
-      .insert({
-        name,
-        mobile,
-        email,
-        url,
-        exam_type: examType,
-        results,
-      });
+    const { data, error } = await supabase.from("xat_scores").insert({
+      name,
+      mobile,
+      email,
+      url,
+      // exam_type: examType,
+      // results,
+    });
 
     if (error) {
+      console.error(error);
       return NextResponse.json(
         {
           error: "Failed to save data",
           details: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -80,7 +65,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
