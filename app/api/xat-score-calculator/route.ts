@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { ANSWER_KEYS } from "./keys";
-import { supabase } from "@/lib/supabase";
+import { ANSWER_KEYS } from "../fetch-html/keys";
 
 export async function POST(req: Request) {
   try {
@@ -16,21 +15,24 @@ export async function POST(req: Request) {
 
     const results = parseAnswerSheet(html, url);
 
-    // Store in Supabase
-    const { error: dbError } = await supabase.from("xat_scores").insert({
-      url,
-      name,
-      mobile,
-      email,
-      candidate_name: results.candidateName,
-      total_score: results.part1.totalScore,
-      part1_stats: results.part1,
-      gk_stats: results.gk,
-      section_stats: results.sections,
-    });
-
-    if (dbError) {
-      console.error("Supabase insert error:", dbError);
+    // Save data using common API
+    try {
+      const saveUrl = new URL("/api/saveCalculatorData", req.url);
+      await fetch(saveUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          mobile,
+          email,
+          url,
+          examType: "XAT",
+          tableName: "xat_scores",
+          results,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save data:", error);
     }
 
     return NextResponse.json(results);
@@ -38,7 +40,7 @@ export async function POST(req: Request) {
     console.error("Error fetching or parsing:", error);
     return NextResponse.json(
       { error: "Failed to fetch or parse answer sheet" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -147,7 +149,7 @@ function parseAnswerSheet(html: string, url: string) {
                   $(tr)
                     .find("[style]")
                     .filter((_, el) =>
-                      greenColorRegex.test($(el).attr("style") || "")
+                      greenColorRegex.test($(el).attr("style") || ""),
                     ).length > 0
                 ) {
                   correctOption = optionLabel;

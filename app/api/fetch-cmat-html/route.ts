@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const results = parseAnswerSheet(html, url);
 
     // Store in Supabase
-    const { error: dbError } = await supabase.from("xat_scores").insert({
+    const { error: dbError } = await supabase.from("cmat_scores").insert({
       url,
       name,
       mobile,
