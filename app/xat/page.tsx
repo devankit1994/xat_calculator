@@ -82,7 +82,7 @@ export default function Home() {
     setResults(null);
 
     try {
-      const response = await fetch("/api/xat-score-calculator", {
+      const response = await fetch("/api/fetch-html", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -58,7 +58,7 @@ export default function CMATPage() {
     setResults(null);
 
     try {
-      const response = await fetch("/api/cmat-score-calculator", {
+      const response = await fetch("/api/fetch-cmat-html", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

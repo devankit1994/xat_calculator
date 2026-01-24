@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { ANSWER_KEYS } from "../fetch-cmat-html/keys";
+import { ANSWER_KEYS } from "./keys";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
@@ -15,25 +16,21 @@ export async function POST(req: Request) {
 
     const results = parseAnswerSheet(html, url);
 
-    // Save data using common API
-    try {
-      const saveUrl = new URL("/api/saveCalculatorData", req.url);
+    // Store in Supabase
+    const { error: dbError } = await supabase.from("cmat_scores").insert({
+      url,
+      name,
+      mobile,
+      email,
+      candidate_name: results.candidateName,
+      total_score: results.part1.totalScore,
+      part1_stats: results.part1,
+      gk_stats: results.gk,
+      section_stats: results.sections,
+    });
 
-      await fetch(saveUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          mobile,
-          email,
-          url,
-          examType: "CMAT",
-          tableName: "cmat_scores",
-          results,
-        }),
-      });
-    } catch (error) {
-      console.error("Failed to save data:", error);
+    if (dbError) {
+      console.error("Supabase insert error:", dbError);
     }
 
     return NextResponse.json(results);
@@ -41,7 +38,7 @@ export async function POST(req: Request) {
     console.error("Error fetching or parsing:", error);
     return NextResponse.json(
       { error: "Failed to fetch or parse answer sheet" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -69,6 +66,8 @@ function parseAnswerSheet(html: string, url: string) {
     string,
     { correct: number; incorrect: number; unattempted: number; score: number }
   > = {};
+
+  const GK_SECTION_NAME = "General Knowledge";
 
   // Extract paper ID from URL if possible
   // URL: .../2076O258S1D1422/...
@@ -148,7 +147,7 @@ function parseAnswerSheet(html: string, url: string) {
                   $(tr)
                     .find("[style]")
                     .filter((_, el) =>
-                      greenColorRegex.test($(el).attr("style") || ""),
+                      greenColorRegex.test($(el).attr("style") || "")
                     ).length > 0
                 ) {
                   correctOption = optionLabel;
@@ -181,7 +180,7 @@ function parseAnswerSheet(html: string, url: string) {
       });
   });
 
-  // Calculate Section Scores for CMAT: +4 correct, -1 incorrect, 0 unattempted, no penalty
+  // Calculate Section Scores
   let part1Correct = 0;
   let part1Incorrect = 0;
   let part1Unattempted = 0;
@@ -195,20 +194,36 @@ function parseAnswerSheet(html: string, url: string) {
   };
 
   Object.entries(sections).forEach(([name, stats]) => {
-    // CMAT Scoring: +4 correct, -1 incorrect
-    const sectionScore = stats.correct * 4 - stats.incorrect * 1;
+    let sectionScore = 0;
 
-    part1Correct += stats.correct;
-    part1Incorrect += stats.incorrect;
-    part1Unattempted += stats.unattempted;
-    part1RawScore += sectionScore;
+    if (name.includes(GK_SECTION_NAME)) {
+      // GK Scoring: +1 correct, 0 incorrect (as per user result)
+      sectionScore = stats.correct * 1;
+
+      gkStats.correct += stats.correct;
+      gkStats.incorrect += stats.incorrect;
+      gkStats.unattempted += stats.unattempted;
+      gkStats.score += sectionScore;
+    } else {
+      // Part 1 Scoring: +1 correct, -0.25 incorrect
+      sectionScore = stats.correct * 1 - stats.incorrect * 0.25;
+
+      part1Correct += stats.correct;
+      part1Incorrect += stats.incorrect;
+      part1Unattempted += stats.unattempted;
+      part1RawScore += sectionScore;
+    }
 
     // Update section object
     sections[name].score = parseFloat(sectionScore.toFixed(2));
   });
 
-  // No penalty for CMAT
-  const part1TotalScore = part1RawScore;
+  // Calculate Penalty for Unattempted Questions in Part 1
+  // Rule: 0.10 marks deducted per unattempted question beyond 8
+  const penaltyCount = Math.max(0, part1Unattempted - 8);
+  const penalty = penaltyCount * 0.1;
+
+  const part1TotalScore = part1RawScore - penalty;
 
   return {
     candidateName,
@@ -217,10 +232,15 @@ function parseAnswerSheet(html: string, url: string) {
       incorrect: part1Incorrect,
       unattempted: part1Unattempted,
       rawScore: parseFloat(part1RawScore.toFixed(2)),
-      penalty: 0, // No penalty
+      penalty: parseFloat(penalty.toFixed(2)),
       totalScore: parseFloat(part1TotalScore.toFixed(2)),
     },
-    gk: gkStats,
+    gk: {
+      correct: gkStats.correct,
+      incorrect: gkStats.incorrect,
+      unattempted: gkStats.unattempted,
+      score: parseFloat(gkStats.score.toFixed(2)),
+    },
     sections: sections,
   };
 }
