@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const { name, mobile, email, url, examType, results, tableName } =
+    const { name, mobile, email, url, examType, results, tableName, city } =
       await req.json();
 
     // Decide table based on caller input (whitelisted for safety)
@@ -63,6 +63,7 @@ export async function POST(req: Request) {
       mobile,
       email,
       url,
+      city,
       // exam_type: examType,
       // results,
     });
