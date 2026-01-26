@@ -9,27 +9,30 @@ import {
   Link as LinkIcon,
   AlertCircle,
   Target,
+  Building
 } from "lucide-react";
 
 interface CalculatorFormProps {
-  onSubmit: (data: { url: string; name: string; mobile: string; email: string }) => void;
+  onSubmit: (data: { url: string; name: string; mobile: string; email: string, city: string }) => void;
   loading: boolean;
   error: string;
   theme?: 'blue' | 'orange';
+  showCityField?: boolean;
 }
 
-export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue' }: CalculatorFormProps) {
+export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue', showCityField = false }: CalculatorFormProps) {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
 
   const handleSubmit = () => {
-    if (!url.trim() || !name.trim() || !mobile.trim() || !email.trim()) {
+    if (!url.trim() || !name.trim() || !mobile.trim() || !email.trim() || (showCityField && !city.trim())) {
       // Error will be set by parent
       return;
     }
-    onSubmit({ url, name, mobile, email });
+    onSubmit({ url, name, mobile, email, city });
   };
 
   return (
@@ -83,7 +86,6 @@ export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue
               />
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
               Email
@@ -99,6 +101,23 @@ export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue
               />
             </div>
           </div>
+          {showCityField && (
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
+              City
+            </label>
+            <div className="relative group">
+              <Building className="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-${theme}-500 transition-colors" />
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Enter your city"
+                className={`w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-${theme}-500/20 focus:border-${theme}-500 outline-none transition-all placeholder-gray-400 font-medium text-gray-900`}
+              />
+            </div>
+          </div>
+          )}
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">

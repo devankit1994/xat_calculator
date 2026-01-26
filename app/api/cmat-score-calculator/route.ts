@@ -4,7 +4,7 @@ import { ANSWER_KEYS } from "../fetch-cmat-html/keys";
 
 export async function POST(req: Request) {
   try {
-    const { url, name, mobile, email } = await req.json();
+    const { url, name, mobile, email, city } = await req.json();
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -26,6 +26,7 @@ export async function POST(req: Request) {
           name,
           mobile,
           email,
+          city,
           url,
           examType: "CMAT",
           tableName: "cmat_scores",
