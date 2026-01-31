@@ -9,29 +9,62 @@ import {
   Link as LinkIcon,
   AlertCircle,
   Target,
-  Building
+  Building,
 } from "lucide-react";
 
 interface CalculatorFormProps {
-  onSubmit: (data: { url: string; name: string; mobile: string; email: string, city: string }) => void;
+  onSubmit: (data: {
+    url: string;
+    name: string;
+    mobile: string;
+    email: string;
+    city: string;
+  }) => void;
   loading: boolean;
   error: string;
-  theme?: 'blue' | 'orange';
+  theme?: "blue" | "orange";
   showCityField?: boolean;
 }
 
-export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue', showCityField = false }: CalculatorFormProps) {
+export default function CalculatorForm({
+  onSubmit,
+  loading,
+  error,
+  theme = "blue",
+  showCityField = false,
+}: CalculatorFormProps) {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
+  const [localError, setLocalError] = useState("");
 
   const handleSubmit = () => {
-    if (!url.trim() || !name.trim() || !mobile.trim() || !email.trim() || (showCityField && !city.trim())) {
-      // Error will be set by parent
+    setLocalError("");
+
+    if (
+      !url.trim() ||
+      !name.trim() ||
+      !mobile.trim() ||
+      !email.trim() ||
+      (showCityField && !city.trim())
+    ) {
+      setLocalError("All fields are required");
       return;
     }
+
+    if (mobile.length !== 10) {
+      setLocalError("Please enter a valid 10-digit mobile number");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setLocalError("Please enter a valid email address");
+      return;
+    }
+
     onSubmit({ url, name, mobile, email, city });
   };
 
@@ -78,8 +111,8 @@ export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue
                 }}
                 placeholder="Mobile No."
                 className={`w-full pl-11 pr-4 py-3 bg-white border rounded-xl focus:ring-2 outline-none transition-all placeholder-gray-400 font-medium text-gray-900 ${
-                  error.toLowerCase().includes("mobile") ||
-                  error.includes("valid")
+                  (localError || error).toLowerCase().includes("mobile") ||
+                  (localError || error).includes("valid")
                     ? "border-red-500 focus:ring-red-500/20 focus:border-red-500"
                     : `border-gray-200 focus:ring-${theme}-500/20 focus:border-${theme}-500`
                 }`}
@@ -97,26 +130,30 @@ export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email ID"
-                className={`w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-${theme}-500/20 focus:border-${theme}-500 outline-none transition-all placeholder-gray-400 font-medium text-gray-900`}
+                className={`w-full pl-11 pr-4 py-3 bg-white border rounded-xl focus:ring-2 outline-none transition-all placeholder-gray-400 font-medium text-gray-900 ${
+                  (localError || error).toLowerCase().includes("email")
+                    ? "border-red-500 focus:ring-red-500/20 focus:border-red-500"
+                    : `border-gray-200 focus:ring-${theme}-500/20 focus:border-${theme}-500`
+                }`}
               />
             </div>
           </div>
           {showCityField && (
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
-              City
-            </label>
-            <div className="relative group">
-              <Building className="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-${theme}-500 transition-colors" />
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Enter your city"
-                className={`w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-${theme}-500/20 focus:border-${theme}-500 outline-none transition-all placeholder-gray-400 font-medium text-gray-900`}
-              />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">
+                City
+              </label>
+              <div className="relative group">
+                <Building className="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-${theme}-500 transition-colors" />
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter your city"
+                  className={`w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-${theme}-500/20 focus:border-${theme}-500 outline-none transition-all placeholder-gray-400 font-medium text-gray-900`}
+                />
+              </div>
             </div>
-          </div>
           )}
 
           <div>
@@ -134,16 +171,16 @@ export default function CalculatorForm({ onSubmit, loading, error, theme = 'blue
               />
             </div>
             <p className="mt-2 text-xs text-gray-500 ml-1">
-              Paste the URL from your browser address bar after logging
-              into the response sheet portal.
+              Paste the URL from your browser address bar after logging into the
+              response sheet portal.
             </p>
           </div>
 
-          {error && (
+          {(localError || error) && (
             <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
               <div className="text-red-700 text-sm font-medium">
-                {error}
+                {localError || error}
               </div>
             </div>
           )}
