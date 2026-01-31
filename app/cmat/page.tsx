@@ -47,8 +47,9 @@ export default function CMATPage() {
     name: string;
     mobile: string;
     email: string;
+    city: string;
   }) => {
-    if (!data.url || !data.name || !data.mobile || !data.email) {
+    if (!data.url || !data.name || !data.mobile || !data.email || !data.city) {
       setError("All fields are required");
       return;
     }
@@ -155,12 +156,13 @@ export default function CMATPage() {
       <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* LEFT */}
-          <CalculatorForm
-            loading={loading}
-            error={error}
-            onSubmit={calculateScore}
-            theme="orange"
-          />
+            <CalculatorForm
+              loading={loading}
+              error={error}
+              onSubmit={calculateScore}
+              theme="orange"
+              showCityField={true}
+            />
 
           {/* RIGHT */}
           <div className="lg:col-span-7">

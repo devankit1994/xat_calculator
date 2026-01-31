@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const { url, name, mobile, email } = await req.json();
+    const { url, name, mobile, email, city } = await req.json();
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       name,
       mobile,
       email,
+      city,
       candidate_name: results.candidateName,
       total_score: results.part1.totalScore,
       part1_stats: results.part1,
