@@ -156,18 +156,22 @@ export default function CMATPage() {
       {/* MAIN */}
       <div className="max-w-7xl mx-auto px-4 py-10">
         {/* Disclaimer */}
-        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
-          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-amber-900 text-sm">Disclaimer</h3>
-            <p className="text-sm text-amber-800 mt-1">
-              The score calculated here is an estimate based on the response
-              sheet. The actual score provided by the official exam authority
-              may vary due to normalization, objection management, or final
-              answer key updates.
-            </p>
+        {results && (
+          <div className="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-900 text-sm">
+                Disclaimer
+              </h3>
+              <p className="text-sm text-amber-800 mt-1">
+                The score calculated here is an estimate based on the response
+                sheet. The actual score provided by the official exam authority
+                may vary due to normalization, objection management, or final
+                answer key updates.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* LEFT */}
