@@ -81,7 +81,7 @@ export default function CMATPage() {
   const getSectionStats = (namePart: string) => {
     if (!results) return null;
     const key = Object.keys(results.sections).find((k) =>
-      k.toLowerCase().includes(namePart.toLowerCase())
+      k.toLowerCase().includes(namePart.toLowerCase()),
     );
     return key ? results.sections[key] : null;
   };
@@ -89,7 +89,7 @@ export default function CMATPage() {
   const renderRow = (
     label: string,
     stats: SectionData | null,
-    icon?: React.ReactNode
+    icon?: React.ReactNode,
   ) => {
     if (!stats) return null;
     const accuracy =
@@ -136,7 +136,6 @@ export default function CMATPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-
       {/* HEADER */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center gap-3">
@@ -144,9 +143,7 @@ export default function CMATPage() {
             <Calculator className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">
-              CMAT Score Calculator
-            </h1>
+            <h1 className="text-xl font-bold">CMAT Score Calculator</h1>
             <p className="text-sm text-gray-500">
               Check your CMAT 2026 performance instantly
             </p>
@@ -157,7 +154,6 @@ export default function CMATPage() {
       {/* MAIN */}
       <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
           {/* LEFT */}
           <CalculatorForm
             loading={loading}
@@ -171,16 +167,13 @@ export default function CMATPage() {
             {!results ? (
               <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-white border border-dashed border-gray-300 rounded-2xl text-gray-400 text-center">
                 <BarChart3 className="w-16 h-16 mb-4 opacity-20" />
-                <h3 className="text-lg font-semibold">
-                  No Results Yet
-                </h3>
+                <h3 className="text-lg font-semibold">No Results Yet</h3>
                 <p className="text-sm">
                   Enter your details to generate scorecard
                 </p>
               </div>
             ) : (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
                 {/* Score Summary Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center">
@@ -212,7 +205,7 @@ export default function CMATPage() {
                       {Math.round(
                         (results.part1.correct /
                           (results.part1.correct + results.part1.incorrect)) *
-                          100
+                          100,
                       ) || 0}
                       %
                     </div>
@@ -286,22 +279,22 @@ export default function CMATPage() {
                         {renderRow(
                           "Quantitative Techniques",
                           quant,
-                          <BarChart3 className="w-4 h-4" />
+                          <BarChart3 className="w-4 h-4" />,
                         )}
                         {renderRow(
                           "Logical Reasoning",
                           lr,
-                          <Target className="w-4 h-4" />
+                          <Target className="w-4 h-4" />,
                         )}
                         {renderRow(
                           "Language Comprehension",
                           lang,
-                          <FileText className="w-4 h-4" />
+                          <FileText className="w-4 h-4" />,
                         )}
                         {renderRow(
                           "Innovation & Entrepreneurship",
                           innov,
-                          <Trophy className="w-4 h-4" />
+                          <Trophy className="w-4 h-4" />,
                         )}
 
                         {/* Overall Row */}
@@ -323,7 +316,7 @@ export default function CMATPage() {
                               (results.part1.correct /
                                 (results.part1.correct +
                                   results.part1.incorrect)) *
-                                100
+                                100,
                             ) || 0}
                             %
                           </td>
@@ -353,9 +346,8 @@ export default function CMATPage() {
                             <td className="p-4 text-center text-gray-600">
                               {ga.correct + ga.incorrect > 0
                                 ? Math.round(
-                                    (ga.correct /
-                                      (ga.correct + ga.incorrect)) *
-                                      100
+                                    (ga.correct / (ga.correct + ga.incorrect)) *
+                                      100,
                                   )
                                 : 0}
                               %
@@ -373,7 +365,6 @@ export default function CMATPage() {
                     score calculation.
                   </div>
                 </div>
-
               </div>
             )}
           </div>

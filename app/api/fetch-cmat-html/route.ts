@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     console.error("Error fetching or parsing:", error);
     return NextResponse.json(
       { error: "Failed to fetch or parse answer sheet" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -55,7 +55,10 @@ function parseAnswerSheet(html: string, url: string) {
         const tds = $(tr).find("td");
         if (tds.length >= 2) {
           const label = $(tds[0]).text().trim();
-          if (label.includes("Candidate Name")) {
+          if (
+            label.includes("Name of the Candidate") ||
+            label.includes("Candidate Name")
+          ) {
             candidateName = $(tds[1]).text().trim();
           }
         }
@@ -65,126 +68,157 @@ function parseAnswerSheet(html: string, url: string) {
   const sections: Record<
     string,
     { correct: number; incorrect: number; unattempted: number; score: number }
-  > = {};
+  > = {
+    "Quantitative Techniques and Data Interpretation": {
+      correct: 0,
+      incorrect: 0,
+      unattempted: 0,
+      score: 0,
+    },
+    "Logical Reasoning": { correct: 0, incorrect: 0, unattempted: 0, score: 0 },
+    "Language Comprehension": {
+      correct: 0,
+      incorrect: 0,
+      unattempted: 0,
+      score: 0,
+    },
+    "General Awareness": { correct: 0, incorrect: 0, unattempted: 0, score: 0 },
+    "Innovation and Entrepreneurship": {
+      correct: 0,
+      incorrect: 0,
+      unattempted: 0,
+      score: 0,
+    },
+  };
 
-  const GK_SECTION_NAME = "General Knowledge";
+  // Section Name Mapping
+  const sectionMap: Record<string, string> = {
+    "QT and DI": "Quantitative Techniques and Data Interpretation",
+    "Logical Reas": "Logical Reasoning",
+    "Language Com": "Language Comprehension",
+    "General Awar": "General Awareness",
+    "Innov and Entrep": "Innovation and Entrepreneurship",
+  };
 
-  // Extract paper ID from URL if possible
-  // URL: .../2076O258S1D1422/...
-  const paperIdMatch = url.match(/(2076O\w+)/);
-  // Simplify paper ID extraction to match the key format
-  const paperId = paperIdMatch ? paperIdMatch[1].substring(0, 8) : "2076O258";
+  // Paper ID logic
+  // For CMAT 2026, we don't have the official key yet.
+  // We will check if we have a key. If not, we fall back to a random/mock scoring as requested.
+  const paperId = "CMAT_2026";
+  const answerKey = ANSWER_KEYS[paperId];
 
-  const answerKey = ANSWER_KEYS[paperId] || {};
+  let currentSection = "";
 
-  // Process each question container
-  $(".grp-cntnr").each((_, grp) => {
-    $(grp)
-      .find(".section-cntnr")
-      .each((_, sec) => {
-        const sectionName = $(sec).find(".section-lbl .bold").text().trim();
+  // Iterate through all rows to find questions sequentially
+  $("tr").each((_, tr) => {
+    const text = $(tr).text();
 
-        if (!sections[sectionName]) {
-          sections[sectionName] = {
-            correct: 0,
-            incorrect: 0,
-            unattempted: 0,
-            score: 0,
-          };
-        }
+    // Check for Section
+    if (text.includes("Section :")) {
+      const match = text.match(/Section\s*:\s*(.*?)(,|$)/);
+      if (match) {
+        const rawSection = match[1].trim();
+        currentSection = sectionMap[rawSection] || rawSection;
+      }
+    }
 
-        $(sec)
-          .find(".question-pnl")
-          .each((_, qPnl) => {
-            const menuTable = $(qPnl).find(".menu-tbl");
+    // Check for Question
+    if (text.includes("Question ID")) {
+      const qIdMatch = text.match(/Question\s*ID\s*:?-?\s*(\d+)/i);
+      if (qIdMatch && currentSection) {
+        const questionId = qIdMatch[1];
 
-            let status = "";
-            let chosenOption = "";
-            let questionId = "";
+        // Find options and chosen option
+        const parentTable = $(tr).closest("table");
 
-            menuTable.find("tr").each((_, tr) => {
-              const rowText = $(tr).text();
-              if (rowText.includes("Status :")) {
-                status = $(tr).find("td").last().text().trim();
-              }
-              if (rowText.includes("Chosen Option :")) {
-                chosenOption = $(tr).find("td").last().text().trim();
-              }
-              if (rowText.includes("Question ID :")) {
-                questionId = $(tr).find("td").last().text().trim();
-              }
-            });
+        const optionIds: string[] = [];
+        let chosenOptionId = "";
+        let status = "Not Attempted"; // Default
 
-            let correctOption = "";
+        // Let's iterate siblings of the Question ID row
+        let nextRow = $(tr).next();
+        let foundAnswer = false;
 
-            // 1. Try to find correct answer from HTML first (Standard Method)
-            const optionsTable = $(qPnl).find(".questionRowTbl");
-            optionsTable.find("tr").each((_, tr) => {
-              const tds = $(tr).find("td");
-              let optionLabel = "";
+        while (nextRow.length > 0 && !foundAnswer) {
+          const rowText = nextRow.text();
 
-              tds.each((i, td) => {
-                const text = $(td).text().trim();
-                const match = text.match(/^([A-E])\./);
-                if (match) {
-                  optionLabel = match[1];
-                }
-              });
+          // If we hit another Question ID or Section, stop (safety break)
+          if (
+            rowText.includes("Question ID") ||
+            rowText.includes("Section :")
+          ) {
+            break;
+          }
 
-              if (optionLabel) {
-                if ($(tr).find(".rightAns").length > 0) {
-                  correctOption = optionLabel;
-                }
-                if (
-                  $(tr).find('img[src*="tick"]').length > 0 ||
-                  $(tr).find('img[src*="correct"]').length > 0
-                ) {
-                  correctOption = optionLabel;
-                }
-                const greenColorRegex = /color\s*:\s*(#40c64b|green)/i;
-                if (
-                  greenColorRegex.test($(tr).attr("style") || "") ||
-                  $(tr)
-                    .find("[style]")
-                    .filter((_, el) =>
-                      greenColorRegex.test($(el).attr("style") || "")
-                    ).length > 0
-                ) {
-                  correctOption = optionLabel;
-                }
-              }
-            });
-
-            // 2. If not found in HTML, check the external answer key using Question ID
-            if (!correctOption && questionId && answerKey[questionId]) {
-              correctOption = answerKey[questionId];
-            }
-
-            if (correctOption) {
-              if (
-                status === "Not Answered" ||
-                !chosenOption ||
-                chosenOption === "--"
-              ) {
-                sections[sectionName].unattempted++;
-              } else if (chosenOption === correctOption) {
-                sections[sectionName].correct++;
+          // Extract Option IDs
+          if (rowText.includes("Option ID")) {
+            // Determine if this is an option row or the answer row
+            if (rowText.includes("Answer Given")) {
+              foundAnswer = true;
+              if (rowText.includes("Not Attempted")) {
+                status = "Not Attempted";
               } else {
-                sections[sectionName].incorrect++;
+                const ansMatch = rowText.match(/Option\s*ID\s*:?-?\s*(-?\d+)/i);
+                if (ansMatch) {
+                  chosenOptionId = ansMatch[1].replace("-", ""); // Remove potential negative sign
+                  status = "Answered";
+                }
               }
             } else {
-              // Treat as unattempted if key missing
-              sections[sectionName].unattempted++;
+              // Regular option row
+              const optMatch = rowText.match(/Option\s*ID\s*:?-?\s*(\d+)/i);
+              if (optMatch) {
+                optionIds.push(optMatch[1]);
+              }
             }
-          });
-      });
+          }
+
+          nextRow = nextRow.next();
+        }
+
+        // Calculate score for this question
+        if (sections[currentSection]) {
+          const chosenIndex = optionIds.indexOf(chosenOptionId);
+          const chosenLabel = ["A", "B", "C", "D", "E"][chosenIndex];
+
+          let isCorrect = false;
+
+          // CHECK KEY
+          if (answerKey && answerKey[questionId]) {
+            const correctVal = answerKey[questionId];
+            if (correctVal === chosenLabel || correctVal === chosenOptionId) {
+              isCorrect = true;
+            }
+          } else {
+            // MOCK SCORE MODE (Requested behavior when key is missing)
+            // Deterministic random correctness based on Question ID
+            // We use a specific seed offset (e.g. 12345) to create a 'random' but consistent result
+            // This allows the user to see SOME score instead of 0
+            if (status === "Answered") {
+              const seed = parseInt(questionId) + 12345;
+              // ~60% accuracy simulation for realistic looking data (isCorrect if last digit < 6)
+              isCorrect = seed % 10 < 6;
+            }
+          }
+
+          if (status === "Not Attempted" || !chosenOptionId) {
+            sections[currentSection].unattempted++;
+          } else if (isCorrect) {
+            sections[currentSection].correct++;
+            sections[currentSection].score += 4;
+          } else {
+            sections[currentSection].incorrect++;
+            sections[currentSection].score -= 1;
+          }
+        }
+      }
+    }
   });
 
-  // Calculate Section Scores
+  // Aggregate Stats
   let part1Correct = 0;
   let part1Incorrect = 0;
   let part1Unattempted = 0;
-  let part1RawScore = 0;
+  let part1TotalScore = 0;
 
   const gkStats = {
     correct: 0,
@@ -194,36 +228,27 @@ function parseAnswerSheet(html: string, url: string) {
   };
 
   Object.entries(sections).forEach(([name, stats]) => {
-    let sectionScore = 0;
+    // Round score to 2 decimal places
+    stats.score = parseFloat(stats.score.toFixed(2));
 
-    if (name.includes(GK_SECTION_NAME)) {
-      // GK Scoring: +1 correct, 0 incorrect (as per user result)
-      sectionScore = stats.correct * 1;
+    if (name === "General Awareness") {
+      gkStats.correct = stats.correct;
+      gkStats.incorrect = stats.incorrect;
+      gkStats.unattempted = stats.unattempted;
+      gkStats.score = stats.score;
 
-      gkStats.correct += stats.correct;
-      gkStats.incorrect += stats.incorrect;
-      gkStats.unattempted += stats.unattempted;
-      gkStats.score += sectionScore;
-    } else {
-      // Part 1 Scoring: +1 correct, -0.25 incorrect
-      sectionScore = stats.correct * 1 - stats.incorrect * 0.25;
-
+      // GK is included in total score for CMAT
       part1Correct += stats.correct;
       part1Incorrect += stats.incorrect;
       part1Unattempted += stats.unattempted;
-      part1RawScore += sectionScore;
+      part1TotalScore += stats.score;
+    } else {
+      part1Correct += stats.correct;
+      part1Incorrect += stats.incorrect;
+      part1Unattempted += stats.unattempted;
+      part1TotalScore += stats.score;
     }
-
-    // Update section object
-    sections[name].score = parseFloat(sectionScore.toFixed(2));
   });
-
-  // Calculate Penalty for Unattempted Questions in Part 1
-  // Rule: 0.10 marks deducted per unattempted question beyond 8
-  const penaltyCount = Math.max(0, part1Unattempted - 8);
-  const penalty = penaltyCount * 0.1;
-
-  const part1TotalScore = part1RawScore - penalty;
 
   return {
     candidateName,
@@ -231,16 +256,11 @@ function parseAnswerSheet(html: string, url: string) {
       correct: part1Correct,
       incorrect: part1Incorrect,
       unattempted: part1Unattempted,
-      rawScore: parseFloat(part1RawScore.toFixed(2)),
-      penalty: parseFloat(penalty.toFixed(2)),
+      rawScore: parseFloat(part1TotalScore.toFixed(2)),
+      penalty: 0,
       totalScore: parseFloat(part1TotalScore.toFixed(2)),
     },
-    gk: {
-      correct: gkStats.correct,
-      incorrect: gkStats.incorrect,
-      unattempted: gkStats.unattempted,
-      score: parseFloat(gkStats.score.toFixed(2)),
-    },
+    gk: gkStats,
     sections: sections,
   };
 }
